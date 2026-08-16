@@ -37,9 +37,11 @@
 
 ## Parte C — Multicast
 
-1.
-2.
-3.
+1. No unicast repetido 3 vezes, o servidor precisa gerar e enviar 3 cópias idênticas do mesmo pacote, uma pra cada cliente, endereçadas individualmente. Isso significa que o mesmo dado trafega várias vezes pela rede, inclusive nos trechos de rede compartilhados por mais de um destinatário. No multicast, o servidor manda **um único pacote**, endereçado ao grupo (`230.0.0.1`), sem saber nem se importar com quantos ou quais clientes existem. É a infraestrutura de rede (switches/roteadores com suporte a IGMP) que replica o pacote apenas nos pontos onde o caminho se bifurca até os membros do grupo. Isso economiza banda e processamento no lado do servidor, principalmente conforme o número de destinatários cresce.
+
+2. TTL (time-to-live) é um campo do cabeçalho IP que limita quantos saltos (roteadores) um pacote pode atravessar antes de ser descartado; cada roteador que encaminha o pacote decrementa o TTL em 1, e quando chega a 0 o pacote é descartado. Isso evita que um pacote fique circulando indefinidamente pela rede em caso de loop de roteamento. No multicast, o TTL também controla o "raio de alcance" da mensagem: um TTL baixo restringe o aviso à rede local, enquanto um TTL maior permite atravessar roteadores multicast e alcançar redes mais distantes. Reparei que no código o servidor Python define `IP_MULTICAST_TTL = 2` explicitamente, enquanto o servidor Java usa o valor padrão do `MulticastSocket` (TTL = 1); como testei tudo na mesma máquina via loopback, essa diferença não teve efeito prático, mas seria relevante numa rede real com mais de um salto entre servidor e clientes.
+
+3. Não, ele não recebe as mensagens perdidas enquanto esteve offline. A arquitetura de multicast não tem persistência nem histórico: quando o pacote é enviado ao grupo, ele não fica guardado em nenhuma fila esperando por membros ausentes. A "inscrição" no grupo (`socket.joinGroup()` em Java, `IP_ADD_MEMBERSHIP` em Python) é só um sinal dado ao sistema operacional/roteador local, via protocolo IGMP, avisando "quero receber pacotes desse grupo a partir de agora". Não é uma assinatura de um serviço que guarda mensagens perdidas pra te entregar depois. Isso ficou bem claro pra mim no troubleshooting que fiz nessa parte: o cliente só recebe o que está sendo enviado no exato momento em que está corretamente inscrito no grupo, na interface de rede certa. Se ele não estiver "ouvindo" naquele instante (seja por estar offline, seja por estar inscrito na interface errada, como aconteceu comigo), a mensagem se perde pra sempre pra ele, do mesmo jeito que uma transmissão de rádio ao vivo que você perde se não estava sintonizado na hora.
 
 ## Parte D — WebSocket
 
