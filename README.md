@@ -19,6 +19,14 @@ Este repositório reúne o laboratório de revisão de redes de computadores, im
 
 Cada parte foi implementada tanto em **Java** quanto em **Python**, com evidências de execução em `evidencias/` e as respostas conceituais de cada parte em [`RESPOSTAS.md`](RESPOSTAS.md).
 
+## Uso de IA
+
+Conforme a nota de transparência do roteiro, declaro o uso do Claude (Anthropic) ao longo deste laboratório, nas seguintes frentes:
+
+- **Preparação do ambiente:** diagnóstico do porquê o Maven não era reconhecido no terminal (PATH desatualizado numa sessão já aberta).
+- **Depuração:** identificação e correção de bugs encontrados durante os testes, como a resposta duplicada do servidor TCP ao tratar a mensagem `hora`, o encoding incorreto do cliente TCP em Python (acentos quebrados), a interface de rede errada usada pelo cliente/servidor Multicast em Java, e a sintaxe correta do comando `mvn exec:java` no PowerShell.
+- **Revisão das respostas de `RESPOSTAS.md`:** as respostas foram redigidas com apoio da IA, sempre a partir de testes e observações que eu mesma fiz (erros reais capturados, comportamento observado ao desligar servidores, etc.), e depois revisadas por mim.
+
 ## Material de referência
 
 - [Roteiro da atividade](Roteiro%202.md)
